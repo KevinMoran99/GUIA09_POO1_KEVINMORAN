@@ -43,6 +43,7 @@
     </head>
     <body>
         <%
+            //Hola
             boolean update = Boolean.parseBoolean((String)request.getAttribute("update"));
             String btnName = update ? "Nuevo" : "Guardar"; // Para el texto del botón
             String btnEditClass = update ? "" : "display: none"; //Para ocultar botones
