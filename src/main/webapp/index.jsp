@@ -13,6 +13,9 @@
 <%@page import="com.sv.udb.controllers.WarehouseController"%>
 <%@page import="com.sv.udb.models.Warehouse"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -42,37 +45,6 @@
         </style>
     </head>
     <body>
-        <%
-            //Hola
-            boolean update = Boolean.parseBoolean((String)request.getAttribute("update"));
-            String btnName = update ? "Nuevo" : "Guardar"; // Para el texto del botón
-            String btnEditClass = update ? "" : "display: none"; //Para ocultar botones
-            
-            boolean error = Boolean.parseBoolean((String)request.getAttribute("error"));
-            String alertClass = error ? "danger" : "success"; // Para el texto del botón
-            
-            int pieceCode;
-            try {
-                pieceCode = (Integer)request.getAttribute("piece"); 
-            } catch (Exception e) {
-                pieceCode = 0;
-            }
-            
-            int provCode;
-            try {
-                provCode = (Integer)request.getAttribute("prov"); 
-            } catch (Exception e) {
-                provCode = 0;
-            }
-            
-            String date;
-            try {
-                date = Utils.formatDate((Date)request.getAttribute("date"), Utils.DATE_UI); 
-            } catch (Exception e) {
-                date = Utils.formatDate(new Date(), Utils.DATE_UI);
-            }
-            
-        %>
         <div class="container">
             <div class="row">
                 <h1>Bodegas</h1>
@@ -80,45 +52,48 @@
                     <div class="panel panel-primary">
                         <div class="panel-heading">El Formulario</div>
                         <div class="panel-body">
-                            <div class="alert alert-<%=alertClass%>">
-                                ${message}
-                            </div>
+                            <c:choose>
+                                <c:when test="${error}">
+                                    <div class="alert alert-danger">
+                                        ${message}
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="alert alert-success">
+                                        ${message}
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                             <form method="POST" action="WarehouseServ" name="Demo">
                                 <input type="hidden" name="id" id="id" value="${id}"/>
                                 <div class="form-group">
                                     <label for="team">Pieza:</label>
                                     <select class="form-control" name="piece" id="piece">
-                                    <% 
-                                        for(Piece temp : new PieceController().getAll())
-                                        {
-                                    %>
-                                        <option value="<%= temp.getId() %>"
-                                                <% 
-                                                    if (temp.getId() == pieceCode) {%>
-                                                    selected
-                                                    <% } %>
-                                                ><%= temp %></option>
-                                    <%
-                                        }
-                                    %>
-                                    </select>
+                                        <c:forEach var="pieceItem" items="<%=new PieceController().getAll()%>">
+                                            <c:choose>
+                                                <c:when test="${pieceItem.getId() == piece}">
+                                                    <option value="${pieceItem.getId()}" selected>${pieceItem}</option>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <option value="${pieceItem.getId()}">${pieceItem}</option>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:forEach>
+                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="team">Proveedor:</label>
                                     <select class="form-control" name="prov" id="prov">
-                                    <% 
-                                        for(Provider temp : new ProviderController().getAll())
-                                        {
-                                    %>
-                                        <option value="<%= temp.getId() %>"
-                                                <% 
-                                                    if (temp.getId() == provCode) {%>
-                                                    selected
-                                                    <% } %>
-                                                ><%= temp %></option>
-                                    <%
-                                        }
-                                    %>
+                                        <c:forEach var="provItem" items="<%=new ProviderController().getAll()%>">
+                                            <c:choose>
+                                                <c:when test="${provItem.getId() == prov}">
+                                                    <option value="${provItem.getId()}" selected>${provItem}</option>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <option value="${provItem.getId()}">${provItem}</option>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:forEach>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -127,12 +102,26 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Fecha de compra:</label>
-                                    <p><%= date %></p>
+                                    <c:choose>
+                                        <c:when test="${date != null}">
+                                            <p><fmt:formatDate pattern = "dd/MM/yyyy" value = "${date}" /></p>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <p><fmt:formatDate pattern = "dd/MM/yyyy" value = "<%=new Date()%>" /></p>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
-                                <input type="submit" class="btn btn-default" name="teamBtn" value="<%=btnName%>"/>
-                                <input type="submit" class="btn btn-primary" style="<%=btnEditClass%>" name="teamBtn" value="Modificar"/>
-                                <input type="submit" class="btn btn-danger" style="<%=btnEditClass%>" name="teamBtn" value="Eliminar" onclick="return confirm('¿Desea eliminar este registro?')"/>
                                 
+                                <c:choose>
+                                    <c:when test="${update == null}">
+                                        <input type="submit" class="btn btn-default" name="teamBtn" value="Guardar"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <input type="submit" class="btn btn-default" name="teamBtn" value="Nuevo"/>
+                                        <input type="submit" class="btn btn-primary" name="teamBtn" value="Modificar"/>
+                                        <input type="submit" class="btn btn-danger" name="teamBtn" value="Eliminar" onclick="return confirm('¿Desea eliminar este registro?')"/>
+                                    </c:otherwise>
+                                </c:choose>
                             </form>
                         </div>
                     </div>
@@ -142,29 +131,15 @@
                         <div class="panel-heading">La Tabla</div>
                         <div class="panel-body">
                             <form method="POST" action="WarehouseServ" name="Tabl">
-                                <table class="table table-bordered">
-                                    <tr>
-                                        <th>Cons</th>
-                                        <th>Pieza</th>
-                                        <th>Proveedor</th>
-                                        <th>Cantidad</th>
-                                        <th>Fecha de compra</th>
-                                    </tr>
-                                    <%
-                                        for(Warehouse temp : new WarehouseController().getAll())
-                                        {
-                                    %>
-                                        <tr>
-                                            <td><input type="radio" name="wareCodeRadio" value="<%= temp.getId() %>"/></td>
-                                            <td><%= temp.getPiece().getName() %></td>
-                                            <td><%= temp.getProvider().getName() %></td>
-                                            <td><%= temp.getQuantity() %></td>
-                                            <td><%= Utils.formatDate(temp.getDate(), Utils.DATE_UI) %></td>
-                                        </tr>
-                                    <%
-                                        }
-                                    %>
-                                </table>
+                                <display:table id="tablWare" export="true" name="<%= new WarehouseController().getAll()%>">
+                                    <display:column title="Cons">
+                                        <input type="radio" name="wareCodeRadio" value="${tablWare.id}"/>
+                                    </display:column>
+                                    <display:column property="piece" title="Pieza" sortable="true" />
+                                    <display:column property="provider" title="Proveedor" sortable="true" />
+                                    <display:column property="quantity" title="Cantidad" sortable="true" />
+                                    <display:column property="date" title="Fecha de compra" sortable="true" format="{0,date,dd/MM/yyyy}" />
+                                </display:table>
                                 <input type="submit" class="btn btn-success" name="teamBtn" value="Consultar"/>
                             </form>
                         </div>

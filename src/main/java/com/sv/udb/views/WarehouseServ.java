@@ -43,7 +43,7 @@ public class WarehouseServ extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try {
             boolean isPost = request.getMethod().equals("POST");
-            String message = "", error = "";
+            String message = "", error = "false";
             if(!isPost) {
                 String CRUD = request.getParameter("teamBtn");
                 if (CRUD.equals("Reporte")) {
@@ -124,6 +124,9 @@ public class WarehouseServ extends HttpServlet {
                         message = "Error al eliminar";
                         error = "true";
                     }
+                }
+                
+                else if (CRUD.equals("Nuevo")){
                 }
                 
                 else {
