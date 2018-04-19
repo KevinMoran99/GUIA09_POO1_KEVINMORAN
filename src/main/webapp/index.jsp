@@ -64,11 +64,11 @@
                                     </div>
                                 </c:otherwise>
                             </c:choose>
-                            <form method="POST" action="WarehouseServ" name="Demo">
+                            <form method="POST" action="process.jsp" name="Demo">
                                 <input type="hidden" name="id" id="id" value="${id}"/>
                                 <div class="form-group">
                                     <label for="team">Pieza:</label>
-                                    <select class="form-control" name="piece" id="piece">
+                                    <select class="form-control" name="piece.id" id="piece">
                                         <c:forEach var="pieceItem" items="<%=new PieceController().getAll()%>">
                                             <c:choose>
                                                 <c:when test="${pieceItem.getId() == piece}">
@@ -83,7 +83,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="team">Proveedor:</label>
-                                    <select class="form-control" name="prov" id="prov">
+                                    <select class="form-control" name="provider.id" id="prov">
                                         <c:forEach var="provItem" items="<%=new ProviderController().getAll()%>">
                                             <c:choose>
                                                 <c:when test="${provItem.getId() == prov}">
@@ -98,7 +98,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="nomb">Cantidad:</label>
-                                    <input type="number" min="1" class="form-control" name="quan" id="quan" value="${quan}"/>
+                                    <input type="number" min="1" class="form-control" name="quantity" id="quan" value="${quan}"/>
                                 </div>
                                 <div class="form-group">
                                     <label>Fecha de compra:</label>
